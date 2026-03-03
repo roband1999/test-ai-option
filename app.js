@@ -5,6 +5,8 @@
   var modeLabel = document.getElementById("mode-label");
   var expression = "";
   var currentMode = "basic";
+  var audioContext = null;
+  var soundTimeout = null;
 
   var keypads = {
     basic: [
@@ -64,6 +66,70 @@
 
   function syncDisplay(value) {
     display.textContent = value || "0";
+  }
+
+  function getAudioContext() {
+    if (audioContext) {
+      return audioContext;
+    }
+
+    var AudioContextConstructor = window.AudioContext || window.webkitAudioContext;
+
+    if (!AudioContextConstructor) {
+      return null;
+    }
+
+    audioContext = new AudioContextConstructor();
+    return audioContext;
+  }
+
+  function fireLaser(button) {
+    var context = getAudioContext();
+
+    if (button && button.classList && button.classList.add) {
+      button.classList.add("key--firing");
+      clearTimeout(soundTimeout);
+      soundTimeout = setTimeout(function () {
+        button.classList.remove("key--firing");
+      }, 120);
+    }
+
+    if (!context) {
+      return;
+    }
+
+    if (typeof context.resume === "function" && context.state === "suspended") {
+      context.resume();
+    }
+
+    var now = typeof context.currentTime === "number" ? context.currentTime : 0;
+    var oscillator = context.createOscillator();
+    var gainNode = context.createGain();
+
+    oscillator.type = "sawtooth";
+    oscillator.frequency.setValueAtTime(880, now);
+    oscillator.frequency.exponentialRampToValueAtTime(220, now + 0.09);
+
+    gainNode.gain.setValueAtTime(0.0001, now);
+    gainNode.gain.exponentialRampToValueAtTime(0.08, now + 0.01);
+    gainNode.gain.exponentialRampToValueAtTime(0.0001, now + 0.12);
+
+    oscillator.connect(gainNode);
+    gainNode.connect(context.destination);
+    oscillator.start(now);
+    oscillator.stop(now + 0.12);
+  }
+
+  function isPlayableKey(key) {
+    if (/^[0-9+\-*/.^()]$/.test(key)) {
+      return true;
+    }
+
+    if (key === "Enter" || key === "=" || key === "Backspace" || key === "Escape") {
+      return true;
+    }
+
+    return key.toLowerCase() === "c" || (currentMode === "scientific" && (key.toLowerCase() === "p" || key.toLowerCase() === "e"));
   }
 
   function appendValue(value) {
@@ -133,7 +199,7 @@
     });
 
     if (modeLabel) {
-      modeLabel.textContent = mode === "scientific" ? "Scientific Calculator" : "Basic Web Calculator";
+      modeLabel.textContent = mode === "scientific" ? "Scientific Flight Computer" : "Basic Flight Computer";
     }
   }
 
@@ -143,6 +209,8 @@
     if (!button) {
       return;
     }
+
+    fireLaser(button);
 
     if (button.dataset.value) {
       appendValue(button.dataset.value);
@@ -171,6 +239,10 @@
   });
 
   document.addEventListener("keydown", function (event) {
+    if (isPlayableKey(event.key)) {
+      fireLaser();
+    }
+
     if (/^[0-9+\-*/.^()]$/.test(event.key)) {
       appendValue(event.key);
       return;

@@ -36,6 +36,7 @@ test("app wires keypad and keyboard interactions", () => {
   const listeners = {};
   const modeListeners = {};
   const appendedButtons = [];
+  const audioEvents = [];
   const keypad = {
     className: "keypad keypad--basic",
     textContent: "",
@@ -65,7 +66,55 @@ test("app wires keypad and keyboard interactions", () => {
     }
   ];
 
-  global.window = { calculatorCore: { evaluateExpression } };
+  function MockAudioContext() {
+    this.currentTime = 0;
+    this.state = "running";
+    this.destination = {};
+  }
+
+  MockAudioContext.prototype.createOscillator = function () {
+    return {
+      type: "",
+      frequency: {
+        setValueAtTime(value, time) {
+          audioEvents.push(["frequency:set", value, time]);
+        },
+        exponentialRampToValueAtTime(value, time) {
+          audioEvents.push(["frequency:ramp", value, time]);
+        }
+      },
+      connect() {},
+      start(time) {
+        audioEvents.push(["oscillator:start", time]);
+      },
+      stop(time) {
+        audioEvents.push(["oscillator:stop", time]);
+      }
+    };
+  };
+
+  MockAudioContext.prototype.createGain = function () {
+    return {
+      gain: {
+        setValueAtTime(value, time) {
+          audioEvents.push(["gain:set", value, time]);
+        },
+        exponentialRampToValueAtTime(value, time) {
+          audioEvents.push(["gain:ramp", value, time]);
+        }
+      },
+      connect() {}
+    };
+  };
+
+  MockAudioContext.prototype.resume = function () {
+    audioEvents.push(["resume"]);
+  };
+
+  global.window = {
+    calculatorCore: { evaluateExpression },
+    AudioContext: MockAudioContext
+  };
   global.document = {
     getElementById(id) {
       if (id === "display") {
@@ -93,7 +142,11 @@ test("app wires keypad and keyboard interactions", () => {
         type: "",
         textContent: "",
         className: "",
-        dataset: {}
+        dataset: {},
+        classList: {
+          add() {},
+          remove() {}
+        }
       };
     }
   };
@@ -106,6 +159,7 @@ test("app wires keypad and keyboard interactions", () => {
   listeners.click({
     target: {
       dataset: { value: "8" },
+      classList: { add() {}, remove() {} },
       closest() {
         return this;
       }
@@ -145,6 +199,11 @@ test("app wires keypad and keyboard interactions", () => {
   assert.equal(display.textContent, "3");
   assert.equal(keypad.className, "keypad keypad--scientific");
   assert.ok(appendedButtons.length > 0);
+  assert.ok(audioEvents.some((event) => event[0] === "oscillator:start"));
+  const eventCount = audioEvents.length;
+
+  listeners.keydown({ key: "q" });
+  assert.equal(audioEvents.length, eventCount);
 
   delete global.window;
   delete global.document;
