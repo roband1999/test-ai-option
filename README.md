@@ -1,6 +1,6 @@
 # test-ai-work
 
-Small static app that demonstrates buttons with synthesized sci-fi laser sounds.
+Small static app that demonstrates calculator buttons with synthesized fart sounds.
 
 ## Scripts
 

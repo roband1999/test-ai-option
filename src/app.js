@@ -1,14 +1,14 @@
-import { playLaserSound } from "./sound.js";
+import { playFartSound } from "./sound.js";
 
 let audioContext;
 
-const buttons = document.querySelectorAll("[data-laser-variant]");
+const buttons = document.querySelectorAll("[data-sound-variant]");
 
 buttons.forEach((button) => {
   button.addEventListener("click", async () => {
     const context = await getAudioContext();
-    const variant = Number(button.dataset.laserVariant || 0);
-    playLaserSound(context, variant);
+    const variant = Number(button.dataset.soundVariant || 0);
+    playFartSound(context, variant);
   });
 });
 

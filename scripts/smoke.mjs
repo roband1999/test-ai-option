@@ -50,7 +50,7 @@ class FakeAudioContext {
 }
 
 const buttons = Array.from({ length: 4 }, (_, variant) => ({
-  dataset: { laserVariant: String(variant) },
+  dataset: { soundVariant: String(variant) },
   addEventListener(type, listener) {
     if (type === "click") {
       buttonListeners.push({ listener, variant });
@@ -61,7 +61,7 @@ const buttons = Array.from({ length: 4 }, (_, variant) => ({
 globalThis.window = { AudioContext: FakeAudioContext };
 globalThis.document = {
   querySelectorAll(selector) {
-    if (selector !== "[data-laser-variant]") {
+    if (selector !== "[data-sound-variant]") {
       throw new Error(`Unexpected selector: ${selector}`);
     }
 
@@ -80,4 +80,4 @@ if (clickedVariants.length !== buttons.length) {
   throw new Error(`Expected ${buttons.length} buttons to register, received ${clickedVariants.length}`);
 }
 
-console.log(`Smoke test passed for ${clickedVariants.length} laser buttons`);
+console.log(`Smoke test passed for ${clickedVariants.length} calculator buttons`);
