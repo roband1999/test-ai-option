@@ -9,12 +9,17 @@
 <body>
   <main class="page">
     <section class="calculator" aria-label="Calculator">
+      <div class="mode-toggle" role="group" aria-label="Calculator mode">
+        <button type="button" class="mode-toggle__button mode-toggle__button--active" data-mode-toggle="basic" aria-pressed="true">Basic</button>
+        <button type="button" class="mode-toggle__button" data-mode-toggle="scientific" aria-pressed="false">Scientific</button>
+      </div>
+
       <div class="display-wrap">
-        <p class="eyebrow">Basic Web Calculator</p>
+        <p id="mode-label" class="eyebrow">Basic Web Calculator</p>
         <output id="display" class="display" aria-live="polite">0</output>
       </div>
 
-      <div class="keypad">
+      <div class="keypad keypad--basic">
         <button type="button" class="key key--muted" data-action="clear">C</button>
         <button type="button" class="key key--muted" data-action="backspace">DEL</button>
         <button type="button" class="key key--accent" data-value="/">/</button>

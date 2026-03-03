@@ -11,8 +11,20 @@ test("handles decimals", () => {
   assert.equal(evaluateExpression("7.5/2.5"), "3");
 });
 
+test("supports scientific functions and constants", () => {
+  assert.equal(evaluateExpression("sqrt(81)+log(100)+ln(e)+sin(pi/2)+abs(-4)"), "17");
+});
+
+test("supports exponents", () => {
+  assert.equal(evaluateExpression("2^3+3^2"), "17");
+});
+
 test("rejects invalid input", () => {
   assert.throws(() => evaluateExpression("2+abc"), /Invalid characters/);
+});
+
+test("rejects unbalanced parentheses", () => {
+  assert.throws(() => evaluateExpression("sqrt(9"), /Unbalanced parentheses/);
 });
 
 test("rejects non-finite results", () => {
@@ -22,22 +34,67 @@ test("rejects non-finite results", () => {
 test("app wires keypad and keyboard interactions", () => {
   const display = { textContent: "" };
   const listeners = {};
+  const modeListeners = {};
+  const appendedButtons = [];
   const keypad = {
+    className: "keypad keypad--basic",
+    textContent: "",
     addEventListener(type, handler) {
       listeners[type] = handler;
+    },
+    appendChild(node) {
+      appendedButtons.push(node);
     }
   };
+  const modeButtons = [
+    {
+      dataset: { modeToggle: "basic" },
+      setAttribute() {},
+      addEventListener(type, handler) {
+        modeListeners.basic = handler;
+      },
+      classList: { toggle() {} }
+    },
+    {
+      dataset: { modeToggle: "scientific" },
+      setAttribute() {},
+      addEventListener(type, handler) {
+        modeListeners.scientific = handler;
+      },
+      classList: { toggle() {} }
+    }
+  ];
 
   global.window = { calculatorCore: { evaluateExpression } };
   global.document = {
     getElementById(id) {
-      return id === "display" ? display : null;
+      if (id === "display") {
+        return display;
+      }
+
+      if (id === "mode-label") {
+        return { textContent: "" };
+      }
+
+      return null;
     },
     querySelector(selector) {
       return selector === ".keypad" ? keypad : null;
     },
+    querySelectorAll(selector) {
+      return selector === "[data-mode-toggle]" ? modeButtons : [];
+    },
     addEventListener(type, handler) {
       listeners[type] = handler;
+    },
+    createElement(tagName) {
+      return {
+        tagName,
+        type: "",
+        textContent: "",
+        className: "",
+        dataset: {}
+      };
     }
   };
 
@@ -65,6 +122,29 @@ test("app wires keypad and keyboard interactions", () => {
 
   listeners.keydown({ key: "Escape" });
   assert.equal(display.textContent, "0");
+
+  modeListeners.scientific();
+  listeners.click({
+    target: {
+      dataset: { value: "sqrt(" },
+      closest() {
+        return this;
+      }
+    }
+  });
+  listeners.keydown({ key: "9" });
+  listeners.click({
+    target: {
+      dataset: { value: ")" },
+      closest() {
+        return this;
+      }
+    }
+  });
+  listeners.keydown({ key: "Enter", preventDefault() {} });
+  assert.equal(display.textContent, "3");
+  assert.equal(keypad.className, "keypad keypad--scientific");
+  assert.ok(appendedButtons.length > 0);
 
   delete global.window;
   delete global.document;
