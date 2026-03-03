@@ -1,0 +1,12 @@
+{
+  "name": "test-ai-option",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "start": "node scripts/smoke.mjs",
+    "preview": "node scripts/serve.mjs",
+    "test": "node --test"
+  }
+}

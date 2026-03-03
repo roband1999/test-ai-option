@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Starfighter Controls</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="layout">
+      <section class="hero">
+        <p class="eyebrow">Cockpit Audio Panel</p>
+        <h1>Buttons now fire with laser-style sound effects.</h1>
+        <p class="lede">
+          Tap any control to trigger a short synthesized blast inspired by vintage
+          space-opera cannons.
+        </p>
+      </section>
+
+      <section class="button-grid" aria-label="Laser control buttons">
+        <button class="control-button" data-laser-variant="0" type="button">
+          Port Cannons
+        </button>
+        <button class="control-button" data-laser-variant="1" type="button">
+          Starboard Cannons
+        </button>
+        <button class="control-button" data-laser-variant="2" type="button">
+          Proton Burst
+        </button>
+        <button class="control-button" data-laser-variant="3" type="button">
+          Turbo Volley
+        </button>
+      </section>
+
+      <p class="footnote">
+        Audio starts on first interaction to comply with browser autoplay rules.
+      </p>
+    </main>
+
+    <script type="module" src="./app.js"></script>
+  </body>
+</html>
