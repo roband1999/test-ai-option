@@ -1,0 +1,109 @@
+#!/bin/zsh
+REAL_GIT='/usr/bin/git'
+EXPECTED_BRANCH='feature/space'
+
+current_branch() {
+  "$REAL_GIT" rev-parse --abbrev-ref HEAD 2>/dev/null || true
+}
+
+require_expected_branch() {
+  local current
+  current="$(current_branch)"
+  if [[ -n "$current" && "$current" != "HEAD" && "$current" != "$EXPECTED_BRANCH" ]]; then
+    echo "Codex git guardrail: refusing '$1' while on branch '$current'. Expected '$EXPECTED_BRANCH'." >&2
+    exit 1
+  fi
+}
+
+block_branch_switch() {
+  local cmd="$1"
+  shift
+  local next_is_value=0
+  for arg in "$@"; do
+    if [[ $next_is_value -eq 1 ]]; then
+      next_is_value=0
+      continue
+    fi
+    case "$arg" in
+      --detach)
+        echo "Codex git guardrail: detached HEAD is not allowed." >&2
+        exit 1
+        ;;
+      -b|-B|-c|-C|--orphan)
+        next_is_value=1
+        continue
+        ;;
+      -*)
+        continue
+        ;;
+      *)
+        if [[ "$arg" != "$EXPECTED_BRANCH" ]]; then
+          echo "Codex git guardrail: refusing to switch to '$arg'. Expected '$EXPECTED_BRANCH'." >&2
+          exit 1
+        fi
+        return
+        ;;
+    esac
+  done
+}
+
+validate_push_target() {
+  local branch
+  branch="$(current_branch)"
+  if [[ "$branch" != "$EXPECTED_BRANCH" ]]; then
+    echo "Codex git guardrail: refusing push from branch '$branch'. Expected '$EXPECTED_BRANCH'." >&2
+    exit 1
+  fi
+
+  local skip_next=0
+  for arg in "$@"; do
+    if [[ $skip_next -eq 1 ]]; then
+      skip_next=0
+      continue
+    fi
+    case "$arg" in
+      -u|--set-upstream|--force-with-lease|--force|-f|--atomic|--follow-tags|--no-verify|--tags|--verbose|-v)
+        continue
+        ;;
+      --repo|--receive-pack|--exec)
+        skip_next=1
+        continue
+        ;;
+      -*)
+        continue
+        ;;
+      origin)
+        continue
+        ;;
+      HEAD:$EXPECTED_BRANCH|$EXPECTED_BRANCH|refs/heads/$EXPECTED_BRANCH|HEAD:refs/heads/$EXPECTED_BRANCH)
+        continue
+        ;;
+      HEAD:*|*:*|refs/heads/*)
+        echo "Codex git guardrail: refusing push target '$arg'. Expected '$EXPECTED_BRANCH'." >&2
+        exit 1
+        ;;
+      *)
+        if [[ "$arg" != "$EXPECTED_BRANCH" ]]; then
+          echo "Codex git guardrail: refusing push target '$arg'. Expected '$EXPECTED_BRANCH'." >&2
+          exit 1
+        fi
+        ;;
+    esac
+  done
+}
+
+case "$1" in
+  checkout|switch)
+    block_branch_switch "$@"
+    ;;
+  commit|merge|rebase|cherry-pick|reset|pull)
+    require_expected_branch "$1"
+    ;;
+  push)
+    shift
+    validate_push_target "$@"
+    set -- push "$@"
+    ;;
+esac
+
+exec "$REAL_GIT" "$@"

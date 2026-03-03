@@ -3,25 +3,17 @@
   "additionalProperties": false,
   "required": [
     "summary",
-    "testingInstructions",
-    "buildSucceeded",
-    "testsPassed",
-    "commitMessage"
+    "commitMessage",
+    "testingInstructions"
   ],
   "properties": {
     "summary": {
       "type": "string"
     },
-    "testingInstructions": {
+    "commitMessage": {
       "type": "string"
     },
-    "buildSucceeded": {
-      "type": "boolean"
-    },
-    "testsPassed": {
-      "type": "boolean"
-    },
-    "commitMessage": {
+    "testingInstructions": {
       "type": "string"
     }
   }
