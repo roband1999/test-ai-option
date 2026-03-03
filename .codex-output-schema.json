@@ -6,7 +6,6 @@
     "testingInstructions",
     "buildSucceeded",
     "testsPassed",
-    "appRunsSuccessfully",
     "commitMessage"
   ],
   "properties": {
@@ -20,9 +19,6 @@
       "type": "boolean"
     },
     "testsPassed": {
-      "type": "boolean"
-    },
-    "appRunsSuccessfully": {
       "type": "boolean"
     },
     "commitMessage": {

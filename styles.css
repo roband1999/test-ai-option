@@ -36,13 +36,48 @@ body {
 }
 
 .calculator {
-  width: min(100%, 380px);
+  width: min(100%, 480px);
   padding: 24px;
   border: 1px solid var(--panel-border);
   border-radius: 28px;
   backdrop-filter: blur(18px);
   background: var(--panel);
   box-shadow: 0 24px 60px rgba(31, 42, 56, 0.14);
+}
+
+.mode-toggle {
+  display: inline-grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  width: 100%;
+  margin-bottom: 18px;
+  padding: 6px;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.66);
+  border: 1px solid rgba(33, 50, 77, 0.08);
+}
+
+.mode-toggle__button {
+  border: 0;
+  border-radius: 14px;
+  min-height: 42px;
+  font: inherit;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--muted);
+  background: transparent;
+  cursor: pointer;
+  transition: background 120ms ease, color 120ms ease, transform 120ms ease;
+}
+
+.mode-toggle__button:hover,
+.mode-toggle__button:focus-visible {
+  transform: translateY(-1px);
+}
+
+.mode-toggle__button--active {
+  background: var(--equal);
+  color: #fff;
 }
 
 .display-wrap {
@@ -72,8 +107,15 @@ body {
 .keypad {
   margin-top: 20px;
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
   gap: 12px;
+}
+
+.keypad--basic {
+  grid-template-columns: repeat(4, 1fr);
+}
+
+.keypad--scientific {
+  grid-template-columns: repeat(5, 1fr);
 }
 
 .key {
@@ -114,6 +156,16 @@ body {
   background: var(--accent-strong);
 }
 
+.key--scientific {
+  background: rgba(36, 76, 122, 0.12);
+  color: var(--equal);
+}
+
+.key--scientific:hover,
+.key--scientific:focus-visible {
+  background: rgba(36, 76, 122, 0.2);
+}
+
 .key--equal {
   grid-column: 4;
   grid-row: 4 / span 2;
@@ -130,10 +182,23 @@ body {
   grid-column: span 2;
 }
 
+.key--equal-scientific {
+  grid-column: span 5;
+  grid-row: auto;
+}
+
 @media (max-width: 480px) {
   .calculator {
     padding: 18px;
     border-radius: 22px;
+  }
+
+  .keypad--scientific {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  .key--equal-scientific {
+    grid-column: span 4;
   }
 
   .key {
