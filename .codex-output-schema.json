@@ -1,0 +1,32 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "summary",
+    "testingInstructions",
+    "buildSucceeded",
+    "testsPassed",
+    "appRunsSuccessfully",
+    "commitMessage"
+  ],
+  "properties": {
+    "summary": {
+      "type": "string"
+    },
+    "testingInstructions": {
+      "type": "string"
+    },
+    "buildSucceeded": {
+      "type": "boolean"
+    },
+    "testsPassed": {
+      "type": "boolean"
+    },
+    "appRunsSuccessfully": {
+      "type": "boolean"
+    },
+    "commitMessage": {
+      "type": "string"
+    }
+  }
+}
