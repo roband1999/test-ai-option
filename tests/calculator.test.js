@@ -37,6 +37,20 @@ test("app wires keypad and keyboard interactions", () => {
   const modeListeners = {};
   const appendedButtons = [];
   const audioEvents = [];
+  const calculatorClasses = new Set();
+  const calculator = {
+    classList: {
+      toggle(className, force) {
+        if (force) {
+          calculatorClasses.add(className);
+          return true;
+        }
+
+        calculatorClasses.delete(className);
+        return false;
+      }
+    }
+  };
   const keypad = {
     className: "keypad keypad--basic",
     textContent: "",
@@ -128,7 +142,15 @@ test("app wires keypad and keyboard interactions", () => {
       return null;
     },
     querySelector(selector) {
-      return selector === ".keypad" ? keypad : null;
+      if (selector === ".keypad") {
+        return keypad;
+      }
+
+      if (selector === ".calculator") {
+        return calculator;
+      }
+
+      return null;
     },
     querySelectorAll(selector) {
       return selector === "[data-mode-toggle]" ? modeButtons : [];
@@ -173,6 +195,20 @@ test("app wires keypad and keyboard interactions", () => {
 
   listeners.keydown({ key: "Backspace" });
   assert.equal(display.textContent, "1");
+
+  listeners.keydown({ key: "Escape" });
+  assert.equal(display.textContent, "0");
+  assert.equal(calculatorClasses.has("calculator--devilish"), false);
+
+  listeners.keydown({ key: "6" });
+  listeners.keydown({ key: "6" });
+  listeners.keydown({ key: "6" });
+  assert.equal(display.textContent, "666");
+  assert.equal(calculatorClasses.has("calculator--devilish"), true);
+
+  listeners.keydown({ key: "Backspace" });
+  assert.equal(display.textContent, "66");
+  assert.equal(calculatorClasses.has("calculator--devilish"), false);
 
   listeners.keydown({ key: "Escape" });
   assert.equal(display.textContent, "0");

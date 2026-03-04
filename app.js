@@ -1,12 +1,14 @@
 (function () {
   var display = document.getElementById("display");
   var keypad = document.querySelector(".keypad");
+  var calculator = document.querySelector(".calculator");
   var modeButtons = Array.prototype.slice.call(document.querySelectorAll("[data-mode-toggle]"));
   var modeLabel = document.getElementById("mode-label");
   var expression = "";
   var currentMode = "basic";
   var audioContext = null;
   var soundTimeout = null;
+  var DEVIL_VALUE = "666";
 
   var keypads = {
     basic: [
@@ -65,7 +67,13 @@
   };
 
   function syncDisplay(value) {
-    display.textContent = value || "0";
+    var nextValue = value || "0";
+
+    display.textContent = nextValue;
+
+    if (calculator && calculator.classList && calculator.classList.toggle) {
+      calculator.classList.toggle("calculator--devilish", nextValue === DEVIL_VALUE);
+    }
   }
 
   function getAudioContext() {

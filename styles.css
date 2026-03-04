@@ -128,6 +128,7 @@ body::after {
     0 28px 72px var(--panel-shadow),
     inset 0 1px 0 rgba(255, 255, 255, 0.08);
   backdrop-filter: blur(20px);
+  transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease;
 }
 
 .calculator::before {
@@ -137,6 +138,43 @@ body::after {
   border-radius: 29px;
   border: 1px solid rgba(130, 214, 255, 0.08);
   pointer-events: none;
+}
+
+.calculator::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% - 10px);
+  width: min(72%, 260px);
+  height: 118px;
+  transform: translateX(-50%) scale(0.4);
+  transform-origin: bottom center;
+  opacity: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 18% 82%, rgba(255, 148, 103, 0.3), transparent 24%),
+    radial-gradient(circle at 82% 82%, rgba(255, 148, 103, 0.3), transparent 24%),
+    linear-gradient(152deg, transparent 44%, rgba(255, 112, 70, 0.98) 45% 60%, transparent 61%) left top / 50% 100% no-repeat,
+    linear-gradient(208deg, transparent 44%, rgba(255, 112, 70, 0.98) 45% 60%, transparent 61%) right top / 50% 100% no-repeat;
+  filter: drop-shadow(0 12px 18px rgba(255, 79, 58, 0.35));
+  transition: transform 180ms ease, opacity 180ms ease, filter 180ms ease;
+}
+
+.calculator.calculator--devilish {
+  transform: scale(1.04);
+  border-color: rgba(255, 119, 92, 0.45);
+  box-shadow:
+    0 36px 92px rgba(40, 2, 2, 0.72),
+    0 0 0 1px rgba(255, 126, 99, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+.calculator.calculator--devilish::after {
+  opacity: 1;
+  transform: translateX(-50%) scale(1);
+  filter:
+    drop-shadow(0 12px 18px rgba(255, 79, 58, 0.35))
+    drop-shadow(0 0 18px rgba(255, 96, 67, 0.4));
 }
 
 .calculator__header {
