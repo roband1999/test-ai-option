@@ -63,9 +63,43 @@ body::after {
   position: relative;
   min-height: 100vh;
   display: grid;
-  place-items: center;
-  padding: 24px;
+  justify-items: center;
+  align-content: center;
+  gap: 24px;
+  padding: 40px 24px;
   overflow: hidden;
+}
+
+.page-header {
+  position: relative;
+  z-index: 1;
+  width: min(100%, 720px);
+  text-align: center;
+}
+
+.page-header__eyebrow {
+  margin: 0;
+  color: #ffd38e;
+  text-transform: uppercase;
+  letter-spacing: 0.28em;
+  font-size: 0.76rem;
+}
+
+.page-header__title {
+  margin: 12px 0 0;
+  font-size: clamp(2.8rem, 9vw, 5rem);
+  line-height: 0.92;
+  letter-spacing: -0.05em;
+  text-transform: uppercase;
+  text-shadow: 0 0 30px rgba(123, 246, 255, 0.2);
+}
+
+.page-header__copy {
+  width: min(100%, 560px);
+  margin: 14px auto 0;
+  color: var(--muted);
+  font-size: 1rem;
+  line-height: 1.6;
 }
 
 .space-ambience {
@@ -356,6 +390,19 @@ body::after {
 }
 
 @media (max-width: 640px) {
+  .page {
+    align-content: start;
+    padding-top: 32px;
+  }
+
+  .page-header__title {
+    font-size: clamp(2.3rem, 12vw, 3.8rem);
+  }
+
+  .page-header__copy {
+    font-size: 0.95rem;
+  }
+
   .space-ambience__planet {
     width: 132px;
     top: 4%;
@@ -375,7 +422,9 @@ body::after {
 
 @media (max-width: 480px) {
   .page {
+    gap: 20px;
     padding: 18px;
+    padding-top: 24px;
   }
 
   .calculator {
