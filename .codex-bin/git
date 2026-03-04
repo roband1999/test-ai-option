@@ -1,6 +1,6 @@
 #!/bin/zsh
 REAL_GIT='/usr/bin/git'
-EXPECTED_BRANCH='features/devil-horns'
+EXPECTED_BRANCH='feature/header'
 
 current_branch() {
   "$REAL_GIT" rev-parse --abbrev-ref HEAD 2>/dev/null || true
